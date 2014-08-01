@@ -1,0 +1,25 @@
+{
+	"name": "atrauzzi/laravel-serializer",
+	"description": "An integration of JMS Serializer with Laravel!",
+	"keywords": [
+		"laravel",
+        "serializer"
+	],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Alexander Trauzzi",
+			"email": "atrauzzi@gmail.com"
+		}
+	],
+	"require": {
+		"php": ">=5.4.0",
+		"laravel/framework": "4.*",
+        "jms/serializer": "dev-master"
+	},
+	"autoload": {
+		"psr-4": {
+			"Atrauzzi\\LaravelSerializer\\": "src/Atrauzzi/LaravelSerializer"
+		}
+	}
+}
