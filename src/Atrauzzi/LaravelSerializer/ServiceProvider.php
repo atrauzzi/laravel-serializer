@@ -3,7 +3,9 @@
 	use Illuminate\Support\ServiceProvider as Base;
 	//
 	use Illuminate\Foundation\Application;
+	use JMS\Serializer\Builder\CallbackDriverFactory;
 	use JMS\Serializer\SerializerBuilder;
+	use Doctrine\Common\Annotations\Reader;
 
 
 	class ServiceProvider extends Base {
@@ -14,7 +16,7 @@
 
 		public function register() {
 
-			$this->app->bind('JMS\Serializer\Serializer', function (Application $app) {
+			$this->app->singleton('JMS\Serializer\Serializer', function (Application $app) {
 
 				/** @var \Illuminate\Config\Repository $config */
 				$config = $app->make('Illuminate\Config\Repository');
@@ -23,6 +25,13 @@
 					::create()
 					->setCacheDir(storage_path('serializer'))
 					->setDebug($config->get('app.debug'))
+					// Note: Because we're using mappings from the L4 configuration system, there's no
+					// real use for $metadataDirs and $reader.
+					->setMetadataDriverFactory(new CallbackDriverFactory(
+						function (array $metadataDirs, Reader $reader) use ($app) {
+							return $app->make('Atrauzzi\LaravelSerializer\MetadataDriver');
+						}
+					))
 					->build()
 				;
 
