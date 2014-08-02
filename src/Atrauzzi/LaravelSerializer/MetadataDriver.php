@@ -1,14 +1,26 @@
 <?php namespace Atrauzzi\LaravelSerializer {
 
 	use JMS\Serializer\Metadata\PropertyMetadata;
+	use JMS\Serializer\Metadata\VirtualPropertyMetadata;
 	use Metadata\Driver\AdvancedDriverInterface;
 	//
 	use Illuminate\Config\Repository;
 	//
 	use JMS\Serializer\Metadata\ClassMetadata;
 	use ReflectionClass;
+	use Atrauzzi\LaravelSerializer\Exception\UnsupportedType as UnsupportedTypeException;
 
 
+	/**
+	 * Class MetadataDriver
+	 *
+	 * This metadata driver integrates JMS Serializer with the Laravel Framework
+	 *
+	 * Mappings are maintained as Laravel configuration files and are read on demand.  Conventions mimic the
+	 * mutator system already present in Eloquent so that the language remains consistent for the majority of cases.
+	 *
+	 * @package Atrauzzi\LaravelSerializer
+	 */
 	class MetadataDriver implements AdvancedDriverInterface {
 
 		/** @var \Illuminate\Config\Repository */
@@ -26,33 +38,122 @@
 		 * @return array
 		 */
 		public function getAllClassNames() {
-			return array_keys($this->config('serializer::mappings'));
+			return array_keys($this->config->get('serializer::mappings'));
 		}
 
 		/**
-		 * @param \ReflectionClass $class
+		 * When serializer wants to serialize a class, it will ask this method to produce the metadata.
 		 *
+		 * @param \ReflectionClass $class
 		 * @return \Metadata\ClassMetadata
 		 */
 		public function loadMetadataForClass(ReflectionClass $class) {
 
 			$className = $class->name;
-			$mappingConfig = $this->config(sprintf('serializer::mappings.%s', $className));
+			$mappingConfig = $this->config->get(sprintf('serializer::mappings.%s', $className));
 
 			$classMetadata = new ClassMetadata($className);
 
-			// Only serialize attributes from the L4 config array.
-			foreach($mappingConfig as $attribute => $config) {
+			//
+			// Generate a default discriminator map if one isn't provided.
 
-				// Check for a mutator method.
-					// If present, use it.
-				// Else check for attribute.
-					// If present, use it.
-				// Else, skip the attribute.
+			$discriminatorMap = is_array($mappingConfig['discriminator_map']) ?
+				[strtolower($class->getShortName()) => $class->getName()]
+				: $mappingConfig['discriminator_map']
+			;
+			$classMetadata->setDiscriminator('_type', $discriminatorMap);
 
-				$propertyMetadata = new PropertyMetadata();
+			//
+			//
+
+			// Only serialize attributes present in the L4 config array.
+			foreach($mappingConfig['attributes'] as $attribute => $attributeConfig) {
+
+				//
+				// Select a property metadata class.
+
+				// If there's a mutator method, it's virtual.
+				$mutatorMethod = sprintf('get%sAttribute', studly_case($attribute));
+				if($class->hasMethod($mutatorMethod))
+					$propertyMetadata = new VirtualPropertyMetadata($class->name, $mutatorMethod);
+				// Otherwise, it's normal.
+				elseif($class->hasProperty($attribute))
+					$propertyMetadata = new PropertyMetadata($class->name, $attribute);
+
+				//
+				//
+
+				if(!empty($propertyMetadata)) {
+
+					//
+					// Additional property config processing.
+
+					// An array config for the attribute means the attribute has more to set up.
+					if(is_array($attributeConfig)) {
+						foreach($attributeConfig as $config => $value) {
+							$metadataSetMethod = sprintf('set%sMetadata', studly_case($config));
+							$this->$metadataSetMethod($propertyMetadata, $value);
+						}
+					}
+					// A string config for the attribute means we're just being told to map the type.
+					elseif(is_string($attributeConfig)) {
+						$this->setTypeMetadata($propertyMetadata, $attributeConfig);
+					}
+					// else - Any other value/null just lives with the defaults.
+
+					//
+					//
+
+					$classMetadata->addPropertyMetadata($propertyMetadata);
+
+				}
 
 			}
+
+		}
+
+		//
+		//
+		//
+
+		/**
+		 * Assigns the data type for a property.
+		 *
+		 * @param PropertyMetadata $propertyMetadata
+		 * @param string $type
+		 * @throws Exception\UnsupportedType
+		 */
+		protected function setTypeMetadata(PropertyMetadata $propertyMetadata, $type) {
+
+			if(!$this->typeSupported($type))
+				throw new UnsupportedTypeException($type);
+
+			$propertyMetadata->setType($type);
+
+		}
+
+		/**
+		 * Checks to see if a type string is supportable.
+		 *
+		 * ToDo: This can easily be expanded to support serializer's more complex type strings
+		 * http://jmsyst.com/libs/serializer/master/reference/annotations#type
+		 *
+		 * @param string $type
+		 * @return bool
+		 */
+		protected function typeSupported($type) {
+
+			if(in_array($type, [
+				'integer',
+				'boolean',
+				'double',
+				'string',
+				'array',
+				'DateTime'
+			]))
+				return true;
+
+			return false;
 
 		}
 
