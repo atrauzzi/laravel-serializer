@@ -155,4 +155,4 @@ that you would like to contribute or suggest, please don't hesitate to open a gi
 
 ### Credits
 
-Laravel Serializer is created and maintained by [Alexander Trauzzi](http://goo.gl/LxDkxM)
+Laravel Serializer is created and maintained by [Alexander Trauzzi](http://goo.gl/Bq49Bg)
