@@ -71,8 +71,8 @@ Let's assume the following mapping configuration:
     ...
 	[
 		'attributes' => [
-			'first_name'
-			'full_name' => [
+			'firstName'
+			'fullName' => [
 				'type' => 'string'
 			]
 		]
