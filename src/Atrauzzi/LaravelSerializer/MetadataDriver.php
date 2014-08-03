@@ -1,6 +1,7 @@
 <?php namespace Atrauzzi\LaravelSerializer {
 
 	use JMS\Serializer\Metadata\PropertyMetadata;
+	use JMS\Serializer\Metadata\StaticPropertyMetadata;
 	use JMS\Serializer\Metadata\VirtualPropertyMetadata;
 	use Metadata\Driver\AdvancedDriverInterface;
 	//
@@ -64,13 +65,13 @@
 			}
 
 			//
-			// Generate a default discriminator map if one isn't provided.
+			// Generate a Type Meta-Property
 
-			$discriminatorMap = !empty($mappingConfig['discriminator_map']) ?
-				$mappingConfig['discriminator_map']
-				: [strtolower($class->getShortName()) => $className]
-			;
-			$classMetadata->setDiscriminator('_type', $discriminatorMap);
+			$classMetadata->addPropertyMetadata(new StaticPropertyMetadata(
+				$className,
+				'_type',
+				snake_case($class->getShortName())
+			));
 
 			//
 			//
@@ -86,10 +87,10 @@
 					// If there's a mutator method, it's virtual.
 					$mutatorMethod = sprintf('get%sAttribute', studly_case($attribute));
 					if($class->hasMethod($mutatorMethod))
-						$propertyMetadata = new VirtualPropertyMetadata($class->name, $mutatorMethod);
+						$propertyMetadata = new VirtualPropertyMetadata($className, $mutatorMethod);
 					// If it's a normal attribute or on an instance of Model.
 					elseif($class->hasProperty($attribute) || $class->isSubclassOf('Illuminate\Database\Eloquent\Model'))
-						$propertyMetadata = new PropertyMetadata($class->name, $attribute);
+						$propertyMetadata = new PropertyMetadata($className, $attribute);
 
 					//
 					//
