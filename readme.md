@@ -138,9 +138,9 @@ by maintaining a sensible separation of concerns.
 ### Eloquent
 
 Laravel's default ORM is Eloquent and is a very convenient tool for manipulating queries and modeling data.  As a
-sideeffect, it tends to bundle many non-domain concerns inside of model classes.
+side effect, it tends to bundle many non-domain concerns inside of model classes.
 Rather than ignore that useful metadata, this integration attempts to leverage it to minimize duplication of your
-effots while authoring project code.  Following is a list of some of the shortcuts you can enjoy if you're using
+efforts while authoring project code.  Following is a list of some of the shortcuts you can enjoy if you're using
 Eloquent for data storage.
 
  * Mutators are detected and used by Laravel Serializer when they are present.

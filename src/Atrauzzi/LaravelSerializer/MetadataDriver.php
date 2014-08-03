@@ -68,7 +68,7 @@
 			// Generate a default discriminator map if one isn't provided.
 
 			$discriminatorMap = is_array($mappingConfig['discriminator_map']) ?
-				[strtolower($class->getShortName()) => $class->getName()]
+				[strtolower($class->getShortName()) => $className]
 				: $mappingConfig['discriminator_map']
 			;
 			$classMetadata->setDiscriminator('_type', $discriminatorMap);
