@@ -63,6 +63,9 @@ When performing serialization, each field in the mapping configuration indicates
 similar to the mutators that can be created on Eloquent models.  That said, you can also define methods following the
 same convention if you are using any other ORM and/or POPOs.
 
+Serialization is done by requesting an instance of `JMS\Serializer\Serializer` from the Laravel container.  Once you
+have that instance, you can make use of it as per the [normal JMS serializer docs](http://jmsyst.com/libs/serializer/master/usage).
+
 Let's assume the following mapping configuration:
 
     ...
@@ -98,6 +101,8 @@ As you can see, `firstName` was output, and `fullName` was mutated from `firstNa
 `lastName` attribute was not ouput because it was not specified in the mapping configuration.  You may also observe
 that a `_type` field was generated as a convenience for any consumers that might be interested in mixed and polymorphic
 result sets.
+
+
 
 ### Separation of Concerns
 
