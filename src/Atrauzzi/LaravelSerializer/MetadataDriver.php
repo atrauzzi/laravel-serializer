@@ -66,7 +66,7 @@
 			//
 			// Generate a default discriminator map if one isn't provided.
 
-			$discriminatorMap = is_array($mappingConfig['discriminator_map']) ?
+			$discriminatorMap = !empty($mappingConfig['discriminator_map']) ?
 				$mappingConfig['discriminator_map']
 				: [strtolower($class->getShortName()) => $className]
 			;

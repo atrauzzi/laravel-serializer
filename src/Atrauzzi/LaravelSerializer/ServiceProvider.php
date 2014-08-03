@@ -17,6 +17,7 @@
 		public function register() {
 
 			$this->app->singleton('JMS\Serializer\Builder\DriverFactoryInterface', function (Application $app) {
+
 				return new CallbackDriverFactory(
 					// Note: Because we're using mappings from the L4 configuration system, there's no
 					// real use for $metadataDirs and $reader.
