@@ -50,6 +50,7 @@
 		public function loadMetadataForClass(ReflectionClass $class) {
 
 			$className = $class->name;
+			$classMetadata = new ClassMetadata($className);
 			$mappingConfig = $this->config->get(sprintf('serializer::mappings.%s', $className));
 
 			// If the class is an instance of Model, as a convenience, pre-configure $visible as defaults.
@@ -62,63 +63,67 @@
 
 			}
 
-			$classMetadata = new ClassMetadata($className);
-
 			//
 			// Generate a default discriminator map if one isn't provided.
 
 			$discriminatorMap = is_array($mappingConfig['discriminator_map']) ?
-				[strtolower($class->getShortName()) => $className]
-				: $mappingConfig['discriminator_map']
+				$mappingConfig['discriminator_map']
+				: [strtolower($class->getShortName()) => $className]
 			;
 			$classMetadata->setDiscriminator('_type', $discriminatorMap);
 
 			//
 			//
 
-			// Only serialize attributes present in the L4 config array.
-			foreach($mappingConfig['attributes'] as $attribute => $attributeConfig) {
+			if(!empty($mappingConfig['attributes'])) {
 
-				//
-				// Select a property metadata class.
-
-				// If there's a mutator method, it's virtual.
-				$mutatorMethod = sprintf('get%sAttribute', studly_case($attribute));
-				if($class->hasMethod($mutatorMethod))
-					$propertyMetadata = new VirtualPropertyMetadata($class->name, $mutatorMethod);
-				// If it's a normal attribute or on an instance of Model.
-				elseif($class->hasProperty($attribute) || $class->isSubclassOf('Illuminate\Database\Eloquent\Model'))
-					$propertyMetadata = new PropertyMetadata($class->name, $attribute);
-
-				//
-				//
-
-				if(!empty($propertyMetadata)) {
+				// Only serialize attributes present in the L4 config array.
+				foreach($mappingConfig['attributes'] as $attribute => $attributeConfig) {
 
 					//
-					// Additional property config processing.
+					// Select a property metadata class.
 
-					// An array config for the attribute means the attribute has more to set up.
-					if(is_array($attributeConfig)) {
-						foreach($attributeConfig as $config => $value) {
-							$metadataSetMethod = sprintf('set%sMetadata', studly_case($config));
-							$this->$metadataSetMethod($propertyMetadata, $value);
+					// If there's a mutator method, it's virtual.
+					$mutatorMethod = sprintf('get%sAttribute', studly_case($attribute));
+					if($class->hasMethod($mutatorMethod))
+						$propertyMetadata = new VirtualPropertyMetadata($class->name, $mutatorMethod);
+					// If it's a normal attribute or on an instance of Model.
+					elseif($class->hasProperty($attribute) || $class->isSubclassOf('Illuminate\Database\Eloquent\Model'))
+						$propertyMetadata = new PropertyMetadata($class->name, $attribute);
+
+					//
+					//
+
+					if(!empty($propertyMetadata)) {
+
+						//
+						// Additional property config processing.
+
+						// An array config for the attribute means the attribute has more to set up.
+						if(is_array($attributeConfig)) {
+							foreach($attributeConfig as $config => $value) {
+								$metadataSetMethod = sprintf('set%sMetadata', studly_case($config));
+								$this->$metadataSetMethod($propertyMetadata, $value);
+							}
 						}
-					}
-					// A string config for the attribute means we're just being told to map the type.
-					elseif(is_string($attributeConfig)) {
-						$this->setTypeMetadata($propertyMetadata, $attributeConfig);
-					}
-					// else - Any other value/null just lives with the defaults.
+						// A string config for the attribute means we're just being told to map the type.
+						elseif(is_string($attributeConfig)) {
+							$this->setTypeMetadata($propertyMetadata, $attributeConfig);
+						}
+						// else - Any other value/null just lives with the defaults.
 
-					//
-					//
+						//
+						//
 
-					$classMetadata->addPropertyMetadata($propertyMetadata);
+						$classMetadata->addPropertyMetadata($propertyMetadata);
+
+					}
 
 				}
 
 			}
+
+			return $classMetadata;
 
 		}
 
