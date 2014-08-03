@@ -89,6 +89,26 @@ And along with it, we'll also assume a business object has the following defined
         return $this->userName . ' ' . $this->lastName;
     }
 
+Your controller will look something like this:
+
+    /** @var \JMS\Serializer\Serializer */
+	protected $serializer;
+
+	/**
+	 * @param \JMS\Serializer\Serializer $serializer
+	 */
+	public function __construct(
+		Serializer $serializer
+	) {
+		$this->serializer = $serializer;
+	}
+
+    public function myController() {
+        // ...
+		$serializedData = $this->serializer->serialize($myInstance, 'json');
+        // ...
+    }
+
 In this scenario, when serialzing to JSON, the following schema will be generated:
 
     {
