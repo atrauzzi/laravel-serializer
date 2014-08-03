@@ -1,6 +1,5 @@
 <?php return [
 
-    // ToDo: Add demo mapping here.
 	'mappings' => [
 
 		'My\Namespace\Domain\User' => [
