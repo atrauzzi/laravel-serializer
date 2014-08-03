@@ -16,6 +16,16 @@
 
 		public function register() {
 
+			$this->app->singleton('JMS\Serializer\Builder\DriverFactoryInterface', function (Application $app) {
+				return new CallbackDriverFactory(
+					// Note: Because we're using mappings from the L4 configuration system, there's no
+					// real use for $metadataDirs and $reader.
+					function (array $metadataDirs, Reader $reader) use ($app) {
+						return $app->make('Atrauzzi\LaravelSerializer\MetadataDriver');
+					}
+				);
+			});
+
 			$this->app->singleton('JMS\Serializer\Serializer', function (Application $app) {
 
 				/** @var \Illuminate\Config\Repository $config */
@@ -25,13 +35,7 @@
 					::create()
 					->setCacheDir(storage_path('serializer'))
 					->setDebug($config->get('app.debug'))
-					// Note: Because we're using mappings from the L4 configuration system, there's no
-					// real use for $metadataDirs and $reader.
-					->setMetadataDriverFactory(new CallbackDriverFactory(
-						function (array $metadataDirs, Reader $reader) use ($app) {
-							return $app->make('Atrauzzi\LaravelSerializer\MetadataDriver');
-						}
-					))
+					->setMetadataDriverFactory($app->make('JMS\Serializer\Builder\DriverFactoryInterface'))
 					->build()
 				;
 

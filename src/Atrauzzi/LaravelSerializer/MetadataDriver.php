@@ -52,6 +52,16 @@
 			$className = $class->name;
 			$mappingConfig = $this->config->get(sprintf('serializer::mappings.%s', $className));
 
+			// If the class is an instance of Model, as a convenience, pre-configure $visible as defaults.
+			if($class->isSubclassOf('Illuminate\Database\Eloquent\Model')) {
+
+				$defaultProperties = $class->getDefaultProperties();
+
+				if(!empty($defaultProperties['visible']))
+					$mappingConfig['attributes'] = array_merge($defaultProperties['visible'], $mappingConfig['attributes']);
+
+			}
+
 			$classMetadata = new ClassMetadata($className);
 
 			//
@@ -76,8 +86,8 @@
 				$mutatorMethod = sprintf('get%sAttribute', studly_case($attribute));
 				if($class->hasMethod($mutatorMethod))
 					$propertyMetadata = new VirtualPropertyMetadata($class->name, $mutatorMethod);
-				// Otherwise, it's normal.
-				elseif($class->hasProperty($attribute))
+				// If it's a normal attribute or on an instance of Model.
+				elseif($class->hasProperty($attribute) || $class->isSubclassOf('Illuminate\Database\Eloquent\Model'))
 					$propertyMetadata = new PropertyMetadata($class->name, $attribute);
 
 				//
@@ -115,6 +125,16 @@
 		//
 		//
 		//
+
+		/**
+		 * Sets the name that will field will be known as in the serialization output.
+		 *
+		 * @param PropertyMetadata $propertyMetadata
+		 * @param string $name
+		 */
+		protected function setNameMetadata(PropertyMetadata $propertyMetadata, $name) {
+			$propertyMetadata->serializedName = $name;
+		}
 
 		/**
 		 * Assigns the data type for a property.
