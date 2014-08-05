@@ -33,7 +33,7 @@
 
 				return SerializerBuilder
 					::create()
-					->setCacheDir(storage_path('serializer'))
+					->setCacheDir(storage_path('cache/serializer'))
 					->setDebug($config->get('app.debug'))
 					->setMetadataDriverFactory($app->make('JMS\Serializer\Builder\DriverFactoryInterface'))
 					->build()
