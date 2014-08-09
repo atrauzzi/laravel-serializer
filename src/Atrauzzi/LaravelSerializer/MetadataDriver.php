@@ -150,37 +150,7 @@
 		 * @throws Exception\UnsupportedType
 		 */
 		protected function setTypeMetadata(PropertyMetadata $propertyMetadata, $type) {
-
-			if(!$this->typeSupported($type))
-				throw new UnsupportedTypeException($type);
-
 			$propertyMetadata->setType($type);
-
-		}
-
-		/**
-		 * Checks to see if a type string is supportable.
-		 *
-		 * ToDo: This can easily be expanded to support serializer's more complex type strings
-		 * http://jmsyst.com/libs/serializer/master/reference/annotations#type
-		 *
-		 * @param string $type
-		 * @return bool
-		 */
-		protected function typeSupported($type) {
-
-			if(in_array($type, [
-				'integer',
-				'boolean',
-				'double',
-				'string',
-				'array',
-				'DateTime'
-			]))
-				return true;
-
-			return false;
-
 		}
 
 	}
