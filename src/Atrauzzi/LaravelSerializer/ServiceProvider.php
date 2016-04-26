@@ -8,11 +8,7 @@
 	use Doctrine\Common\Annotations\Reader;
 
 
-	class ServiceProvider extends Base {
-
-		public function boot() {
-			$this->package('atrauzzi/laravel-serializer', 'serializer');
-		}
+	class ServiceProvider extends Base {	
 
 		public function register() {
 
@@ -44,5 +40,15 @@
 		}
 
 	}
+
+	/**
+     	 * Get the services provided by the provider.
+	 *
+	 * @return array
+     	 */
+    	public function provides()
+    	{
+        	return ['serializer'];
+    	}
 
 }
