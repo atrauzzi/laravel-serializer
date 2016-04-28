@@ -39,7 +39,7 @@
 		 * @return array
 		 */
 		public function getAllClassNames() {
-			return array_keys($this->config->get('serializer::mappings'));
+			return array_keys($this->config->get('serializer.mappings'));
 		}
 
 		/**
@@ -52,7 +52,7 @@
 
 			$className = $class->name;
 			$classMetadata = new ClassMetadata($className);
-			$mappingConfig = $this->config->get(sprintf('serializer::mappings.%s', $className));
+			$mappingConfig = $this->config->get(sprintf('serializer.mappings.%s', $className));
 
 			// If the class is an instance of Model, as a convenience, pre-configure $visible as defaults.
 			if($class->isSubclassOf('Illuminate\Database\Eloquent\Model')) {
@@ -138,7 +138,7 @@
 		 * @param PropertyMetadata $propertyMetadata
 		 * @param string $name
 		 */
-		protected function setNameMetadata(PropertyMetadata $propertyMetadata, $name) {
+		protected function setSerializedNameMetadata(PropertyMetadata $propertyMetadata, $name) {
 			$propertyMetadata->serializedName = $name;
 		}
 

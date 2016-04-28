@@ -9,7 +9,7 @@ To get Laravel Serializer ready for use in your project, take the usual steps fo
  * Add `atrauzzi/laravel-serializer` to your `composer.json` file.
  * Run `composer update` at the root of your project.
  * Edit your `app/config/app.php` file and add:
-   * `'Atrauzzi\LaravelSerializer\ServiceProvider',` somewhere near the bottom of your `providers` array
+   * `Atrauzzi\LaravelSerializer\JMSSerializerServiceProvider::class,` somewhere near the bottom of your `providers` array
  * Take a project-level copy of the configuration `./artisan config:publish atrauzzi/laravel-serializer`
 
 ```
