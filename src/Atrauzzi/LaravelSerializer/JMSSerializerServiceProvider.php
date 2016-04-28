@@ -8,7 +8,7 @@
 	use Doctrine\Common\Annotations\Reader;
 
 
-	class ServiceProvider extends Base {
+	class JMSSerializerServiceProvider extends Base {
 
 		public function boot() {
 			$this->package('atrauzzi/laravel-serializer', 'serializer');
