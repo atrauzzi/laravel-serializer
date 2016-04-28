@@ -10,10 +10,6 @@
 
 	class JMSSerializerServiceProvider extends Base {
 
-		public function boot() {
-			$this->package('atrauzzi/laravel-serializer', 'serializer');
-		}
-
 		public function register() {
 
 			$this->app->singleton('JMS\Serializer\Builder\DriverFactoryInterface', function (Application $app) {
@@ -41,6 +37,16 @@
 
 			});
 
+		}
+
+		/**
+		 * Get the services provided by the provider.
+		 *
+		 * @return array
+			 */
+		public function provides()
+		{
+			return ['serializer'];
 		}
 
 	}
