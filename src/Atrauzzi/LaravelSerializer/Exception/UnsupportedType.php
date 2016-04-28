@@ -1,11 +1,9 @@
-<?php
+<?php namespace Atrauzzi\LaravelSerializer\Exception {
 
-namespace Atrauzzi\LaravelSerializer\Exception {
+	use Exception;
 
-    use Exception;
 
-    class UnsupportedType extends Exception
-    {
-    }
+	class UnsupportedType extends Exception {
+	}
 
 }
