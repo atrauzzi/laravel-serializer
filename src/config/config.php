@@ -1,22 +1,24 @@
-<?php return [
+<?php
 
-	'mappings' => [
+return [
 
-		'My\Namespace\Domain\User' => [
+    'mappings' => [
 
-			// By default, a discriminator map is generated for you.
-			// 'discriminator_map' => [
-			// 	'user' => 'My\Namespace\Domain\User'
-			// ],
+        'My\Namespace\Domain\User' => [
 
-			'attributes' => [
+            // By default, a discriminator map is generated for you.
+            // 'discriminator_map' => [
+            // 	'user' => 'My\Namespace\Domain\User'
+            // ],
 
-				'id' => 'integer'
+            'attributes' => [
 
-			]
+                'id' => 'integer',
 
-		]
+            ],
 
-	]
+        ],
+
+    ],
 
 ];
