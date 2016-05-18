@@ -39,6 +39,12 @@
 
 		}
 
+		public function boot()
+		{
+			$configPath = __DIR__ . '/../../config/serializer.php';
+			$this->publishes([$configPath => config_path('serializer.php')]);
+		}
+
 		/**
 		 * Get the services provided by the provider.
 		 *
