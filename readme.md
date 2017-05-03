@@ -109,7 +109,7 @@ Your controller will look something like this:
         // ...
     }
 
-In this scenario, when serialzing to JSON, the following schema will be generated:
+In this scenario, when serializing to JSON, the following schema will be generated:
 
     {
         "_type": "...",
